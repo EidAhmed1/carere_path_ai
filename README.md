@@ -17,6 +17,14 @@
 
 ---
 
+<p align="center">
+  🚀 Try the platform now:
+  <br/>
+  <a href="https://carere-path-ai-uvdb.vercel.app/">
+    🌐 AI Career Paths Live Demo
+  </a>
+</p>
+
 # 🌟 About The Project
 
 **AI Career Paths** is an interactive platform designed to help students, beginners, and AI enthusiasts discover the right career direction in the world of Artificial Intelligence and Data.
