@@ -137,7 +137,7 @@ function DetailView({ p, onBack }) {
 
       <div className="trail">
         <span className="trail-line" />
-        {p.roadmap.map((step, i) => (
+        {(Array.isArray(p.roadmap) ? p.roadmap : []).map((step, i) => (
           <Waypoint step={step} index={i} key={step.title} />
         ))}
         <div className="trail-finish">🏁 وصلت لآخر محطة — دورك تبني مشروع حقيقي وتشارك إنجازك مع المجتمع</div>

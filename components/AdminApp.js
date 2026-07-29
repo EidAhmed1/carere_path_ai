@@ -24,7 +24,7 @@ function StepEditor({ step, stepIndex, total, onUpdate, onRemove, onMove, onAddS
       <label className="form-label">الوسوم / المفاهيم الفرعية (افصل بفاصلة)</label>
       <input
         className="field-input"
-        value={step.tags.join(", ")}
+        value={(step.tags || []).join(", ")}
         onChange={(e) => onUpdate(stepIndex, "tags", e.target.value.split(",").map((t) => t.trim()).filter(Boolean))}
         placeholder="Variables, Loops, Functions"
       />
@@ -190,7 +190,7 @@ function AdminView({ pathsData, onSave, onDelete, onBack }) {
           <h3>خطوات المسار ({draft.roadmap.length})</h3>
           <button type="button" className="btn-tiny" onClick={addStep}><PlusIcon /> إضافة موضوع</button>
         </div>
-        {draft.roadmap.map((step, i) => (
+        {(Array.isArray(draft.roadmap) ? draft.roadmap : []).map((step, i) => (
           <StepEditor
             key={i}
             step={step}

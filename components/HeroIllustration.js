@@ -1,7 +1,11 @@
 const HERO_NODES = Array.from({ length: 12 }, (_, i) => {
   const angle = ((i * 30 - 90) * Math.PI) / 180;
   const r = 150;
-  return { x: 200 + r * Math.cos(angle), y: 200 + r * Math.sin(angle) };
+
+  return {
+    x: Number((200 + r * Math.cos(angle)).toFixed(6)),
+    y: Number((200 + r * Math.sin(angle)).toFixed(6)),
+  };
 });
 
 export default function HeroIllustration() {
