@@ -1,0 +1,92 @@
+"use client";
+import { useEffect, useRef } from "react";
+import { prefersReducedMotion } from "@/lib/hooks";
+
+export default function NeuralCanvas({ theme }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const reduced = prefersReducedMotion();
+    const lineRGB = theme === "light" ? "90,86,220" : "140,160,255";
+    const nodeRGB = theme === "light" ? "70,64,200" : "190,205,255";
+    let raf = null;
+    let width = 0;
+    let height = 0;
+    let nodes = [];
+
+    function buildNodes() {
+      const count = Math.min(55, Math.max(20, Math.floor((width * height) / 16000)));
+      nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: (Math.random() - 0.5) * 0.28,
+      }));
+    }
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      width = canvas.clientWidth;
+      height = canvas.clientHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      buildNodes();
+    }
+
+    function drawFrame() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const maxDist = 130;
+          if (dist < maxDist) {
+            const o = (1 - dist / maxDist) * (theme === "light" ? 0.28 : 0.22);
+            ctx.strokeStyle = `rgba(${lineRGB},${o})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+      for (const n of nodes) {
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${nodeRGB},0.75)`;
+        ctx.arc(n.x, n.y, 1.7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function step() {
+      for (const n of nodes) {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > width) n.vx *= -1;
+        if (n.y < 0 || n.y > height) n.vy *= -1;
+      }
+      drawFrame();
+      raf = requestAnimationFrame(step);
+    }
+
+    resize();
+    if (reduced) {
+      drawFrame();
+    } else {
+      step();
+    }
+    window.addEventListener("resize", resize);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, [theme]);
+
+  return <canvas ref={canvasRef} className="neural-canvas" aria-hidden="true" />;
+}
