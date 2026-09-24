@@ -16,9 +16,13 @@ export default function NeuralCanvas({ theme }) {
     let width = 0;
     let height = 0;
     let nodes = [];
+    let isVisible = true; // متغير لتتبع إذا كان القسم ظاهراً للمستخدم
 
     function buildNodes() {
-      const count = Math.min(55, Math.max(20, Math.floor((width * height) / 16000)));
+      // تقليل عدد النقاط على الجوالات لتخفيف الضغط على المعالج
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const divisor = isMobile ? 25000 : 16000;
+      const count = Math.min(isMobile ? 25 : 55, Math.max(15, Math.floor((width * height) / divisor)));
       nodes = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -65,6 +69,12 @@ export default function NeuralCanvas({ theme }) {
     }
 
     function step() {
+      // إذا كان المستخدم قد نزل بالأسكرول ولم يعد يرى الرسمة، أوقف الأنيميشن فوراً
+      if (!isVisible) {
+        if (raf) cancelAnimationFrame(raf);
+        return; 
+      }
+
       for (const n of nodes) {
         n.x += n.vx;
         n.y += n.vy;
@@ -75,18 +85,36 @@ export default function NeuralCanvas({ theme }) {
       raf = requestAnimationFrame(step);
     }
 
+    // مراقب لتتبع إذا كان الكانفس ظاهراً على الشاشة أم لا
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible && !reduced) {
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(step);
+        } else {
+          if (raf) cancelAnimationFrame(raf);
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(canvas);
+
     resize();
     if (reduced) {
       drawFrame();
     } else {
-      step();
+      raf = requestAnimationFrame(step);
     }
+    
     window.addEventListener("resize", resize);
     return () => {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      observer.disconnect();
     };
   }, [theme]);
 
-  return <canvas ref={canvasRef} className="neural-canvas" aria-hidden="true" />;
+  // تم تغيير اسم الكلاس ليطابق إصلاحات الـ CSS
+  return <canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />;
 }

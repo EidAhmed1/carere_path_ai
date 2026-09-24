@@ -1,5 +1,8 @@
 
-
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
         .app {
           --ink: #080B14;
           --panel: rgba(255,255,255,0.035);
@@ -17,7 +20,7 @@
           color: var(--text);
           min-height: 100dvh;
           position: relative;
-          overflow-x: hidden;
+          /* overflow-x: hidden; */
           padding: 64px 0 90px;
           transition: background 0.3s ease, color 0.3s ease;
         }
