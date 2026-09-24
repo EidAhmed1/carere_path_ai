@@ -15,7 +15,7 @@
           font-family: 'Tajawal', sans-serif;
           background: var(--ink);
           color: var(--text);
-          min-height: 100vh;
+          min-height: 100dvh;
           position: relative;
           overflow-x: hidden;
           padding: 64px 0 90px;
