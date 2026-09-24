@@ -5,6 +5,7 @@ import { useInView, useScrollProgress, useTheme, handleTiltMove, handleTiltLeave
 import { WhatsAppIcon, SunIcon, MoonIcon, AiMarkIcon, LinkIcon, GearIcon } from "./Icons";
 import NeuralCanvas from "./NeuralCanvas";
 import HeroIllustration from "./HeroIllustration";
+import InAppBrowserNotice from "./InAppBrowserNotice";
 
 function HomeCard({ p, onOpen, maxSteps }) {
   const ringDeg = (p.roadmap.length / maxSteps) * 360;
@@ -187,7 +188,9 @@ export default function PublicSite({ initialPaths }) {
   }
 
   return (
-    <div className="app" dir="rtl" data-theme={theme}>
+    <div className="app" dir="rtl" data-theme={theme} suppressHydrationWarning>
+      <InAppBrowserNotice /> {/* <--- تم إضافة الرسالة هنا لتظهر فوق كل شيء */}
+      
       <div className="aurora" />
       <div className="topo" />
 
